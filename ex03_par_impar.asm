@@ -4,7 +4,7 @@ ORG 100h
 
   MOV row, 0    
   GOTOXY 0, row
-  PRINT 'Entre um numero entre 00 e 99: '
+  PRINT 'Digite um numero inteiro entre 00 e 99: '
     
 start:
   ADD row, 1
