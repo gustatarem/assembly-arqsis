@@ -30,7 +30,7 @@ ifx0:
   GOTOXY 0, row
   JMP start
 
-soma:
+sum:
   ADD BL, 1,
   PRINT ', '
   LOOP start
