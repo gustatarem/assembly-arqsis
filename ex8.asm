@@ -23,8 +23,9 @@ storefirstnumber:
   MOV AH, 10               
   MUL AH                  
   ADD AL, BL
-  SUB AL, 30h               
-  MOV firstnum, AL
+  SUB AL, 30h
+  MOV AH, 0h               
+  MOV firstnum, AX
   JMP getsecondnumber
   
 getsecondnumber:
@@ -46,24 +47,31 @@ storesecondnumber:
   MOV AH, 10               
   MUL AH                   
   ADD AL, BL
-  SUB AL, 30h               
-  MOV secondnum, AL
+  SUB AL, 30h
+  MOV AH, 0h               
+  MOV secondnum, AX
   JMP getoperator
   
-  
-getsecondnumber:
+getoperator:
   ADD row, 1
   GOTOXY 0, row
-  PRINT 'Digite um numero inteiro entre 00 e 99: ' 
+  PRINT 'Digite o operador (+, -, * ou /): ' 
   MOV AH, 01                
-  INT 21h               
-  MOV BH, AL               
   INT 21h
-  MOV BL, AL                
-  CMP BH, 30h               
-  JB  iffails              
-  JMP storesecondnumber  
+  MOV BL, AL 
+  CMP BL, 2Ah               
+  JE  storeoperator;                  
+  CMP BL, 2Bh               
+  JE  storeoperator;                  
+  CMP BL, 2Dh               
+  JE  storeoperator;                  
+  CMP BL, 2Fh               
+  JE  storeoperator;  
+  JMP iffails;
 
+storeoperator:              
+  MOV operator, BL
+  JMP calculatenumbers  
   
 iffails:
   ADD row, 1
@@ -72,63 +80,76 @@ iffails:
   JMP getfirstnumber
 
 calculatenumbers:
-  MOV AL, firstnum
-  MOV AH, secondnum
-  ADD AL, AH
-  MOV sum, AL
-  JMP printsum
+  MOV AX, firstnum
+  MOV CX, secondnum
+  CMP operator, 2Ah               
+  JE  multiply;                  
+  CMP operator, 2Bh               
+  JE  sum;                  
+  CMP operator, 2Dh               
+  JE  subtract;                  
+  CMP operator, 2Fh               
+  JE  divide;
+  
+multiply:
+  MUL CX
+  MOV result, AX
+  JMP printresult
 
-printsum:
+sum:
+  ADD AX, CX
+  MOV result, AX
+  JMP printresult
+
+subtract:
+  SUB AX, CX
+  MOV result, AX
+  JMP printresult
+
+divide:
+  MOV CX, AX
+  MOV AH, 0
+  DIV CX
+  MOV result, AX
+  JMP printresult  
+
+printresult:
   ADD row, 1  
   GOTOXY 0, row
-  PRINT 'A soma eh: '
-  CMP sum, 100
+  PRINT 'O resultado eh: '
+  CMP result, 100
   JNAE print2numbers
-  MOV AL, sum
-  MOV AH, 0h
-  MOV CH, 100
-  DIV CH
+  JMP print3numbers
+  
+print3numbers:
+  MOV AX, result
+  MOV CX, 100
+  DIV CX
   MOV DX, AX
   ADD DX, 30h
   MOV AH, 02
   INT 21h
-  
-  SUB sum, 100
-  MOV AL, sum
-  MOV AH, 0h
-  MOV CH, 10
-  DIV CH
-  MOV DX, AX
-  ADD DX, 30h
-  MOV AH, 02
-  INT 21h 
-  
-  MOV AL, sum
-  MOV AH, 0h
-  MOV CH, 10
-  DIV CH
-  MOV DL, AH
-  ADD DX, 30h
-  MOV AH, 02
-  INT 21h
-  
-  RET
+  SUB DX, 30h    
+  MOV AX, DX
+  MOV CL, 100
+  MUL CL
+  SUB result, AX
+  JMP print2numbers
 
 print2numbers:
-  MOV AL, sum
-  MOV AH, 0h
-  MOV CH, 10
-  DIV CH
-  MOV DX, AX
-  ADD DX, 30h
+  MOV AX, result
+  MOV CL, 10
+  DIV CL
+  MOV AH, 0
+  MOV DL, AL
+  ADD DL, 30h
   MOV AH, 02
   INT 21h
-  MOV AL, sum
-  MOV AH, 0h
-  MOV CH, 10
-  DIV CH
+  MOV AX, result
+  MOV CL, 10
+  DIV CL
   MOV DL, AH
-  ADD DX, 30h
+  ADD DL, 30h
   MOV AH, 02
   INT 21h        
   
@@ -136,6 +157,8 @@ print2numbers:
 
 
 row DB 0
-firstnum DB 0
-secondnum DB 0
-sum DB 0
+firstnum DW 0
+secondnum DW 0
+operator DB 0
+result DW 0
+varax DW 0
