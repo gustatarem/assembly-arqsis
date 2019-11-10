@@ -2,103 +2,125 @@ include emu8086.inc
 
 ORG 100h
   MOV row, 0
-  GOTOXY 0, row
-  PRINT 'Digite um numero inteiro entre 00 e 99: '
+  JMP getfirstnumber
     
-getfirstnumber: 
-  MOV AH, 01
+getfirstnumber:
+  ADD row, 1
+  GOTOXY 0, row
+  PRINT 'Digite um numero inteiro entre 00 e 99: ' 
+  MOV AH, 01                
+  INT 21h                 
+  MOV BH, AL               
   INT 21h
-  MOV BH, AL
-  INT 21h
-  MOV BL, AL
-  CMP BH, 30h
-  JB  iffails
+  MOV BL, AL               
+  CMP BH, 30h              
+  JB  iffails              
+  JMP storefirstnumber      
+
+storefirstnumber:
+  MOV AL, BH
+  SUB AL, 30h
+  MOV AH, 10               
+  MUL AH                  
+  ADD AL, BL
+  SUB AL, 30h               
+  MOV firstnum, AL
   JMP getsecondnumber
   
-getsecondnumber: 
-  MOV AH, 01
+getsecondnumber:
+  ADD row, 1
+  GOTOXY 0, row
+  PRINT 'Digite um numero inteiro entre 00 e 99: ' 
+  MOV AH, 01                
+  INT 21h               
+  MOV BH, AL               
   INT 21h
-  MOV BH, AL
-  INT 21h
-  MOV BL, AL
-  CMP BH, 30h
-  JB  iffails
-  JMP ifok 
+  MOV BL, AL                
+  CMP BH, 30h               
+  JB  iffails              
+  JMP storesecondnumber    
+
+storesecondnumber:
+  MOV AL, BH
+  SUB AL, 30h
+  MOV AH, 10               
+  MUL AH                   
+  ADD AL, BL
+  SUB AL, 30h               
+  MOV secondnum, AL
+  JMP calculatenumbers
   
 iffails:
   ADD row, 1
   GOTOXY 0, row
-  PRINT 'O valor digitado eh invalido, digite novamente: '
-  JMP start
+  PRINT 'O valor digitado eh invalido, reiniciando programa...'
+  JMP getfirstnumber
 
-ifok:
-  CMP BH, 39H
-  JA  iffails
-  CMP BL, 30h
-  JB  iffails
-  CMP BL, 39H
-  JA  iffails  
+calculatenumbers:
+  MOV AL, firstnum
+  MOV AH, secondnum
+  ADD AL, AH
+  MOV sum, AL
+  JMP printsum
+
+printsum:
+  ADD row, 1  
   GOTOXY 0, row
-  PRINT 'O antecessor ao numero digitado eh: '
+  PRINT 'A soma eh: '
+  CMP sum, 100
+  JNAE print2numbers
+  MOV AL, sum
+  MOV AH, 0h
+  MOV CH, 100
+  DIV CH
+  MOV DX, AX
+  ADD DX, 30h
   MOV AH, 02
-  MOV CX, BX
-  CMP BL, 30h
-  JNE diff0
-  CMP BH, 30h
-  JNE diff00
-  MOV CH, 2Dh
-  MOV CL, 31h
-  JMP prints 
+  INT 21h
   
-diff00:
-  SUB CH, 1
-  MOV CL,39h    
-  JMP prints
-
-diff0:
-  SUB CL, 1
-
-prints: 
-  ADD row, 1
-  MOV DL, CH
-  INT 21h
-  MOV DL, CL
-  INT 21h
-  GOTOXY 0, row
-  PRINT 'O sucessor ao numero digitado eh: '
-  MOV CX, BX
-  CMP BL, 39h
-  JNE not9
-  CMP BH, 39h
-  JNE not99
-  MOV CH, 30h
-  MOV CL, 30h
-  MOV DL, 31h
-  INT 21h
-  JMP printnum
-
-not99:  
-  ADD CH, 1
-  MOV CL,30h    
-  JMP printnum
+  SUB sum, 100
+  MOV AL, sum
+  MOV AH, 0h
+  MOV CH, 10
+  DIV CH
+  MOV DX, AX
+  ADD DX, 30h
+  MOV AH, 02
+  INT 21h 
   
-not9:   
-  ADD CL, 1
+  MOV AL, sum
+  MOV AH, 0h
+  MOV CH, 10
+  DIV CH
+  MOV DL, AH
+  ADD DX, 30h
+  MOV AH, 02
+  INT 21h
+  
+  RET
 
-printnum: 
-  ADD row, 1 
-  MOV DL, CH
+print2numbers:
+  MOV AL, sum
+  MOV AH, 0h
+  MOV CH, 10
+  DIV CH
+  MOV DX, AX
+  ADD DX, 30h
+  MOV AH, 02
   INT 21h
-  MOV DL, CL
-  INT 21h
-  GOTOXY 0, row
-  PRINT 'O numero digitado foi: '
-  MOV DL, BH
-  INT 21h
-  MOV DL, BL
-  INT 21h
-        
-RET 
+  MOV AL, sum
+  MOV AH, 0h
+  MOV CH, 10
+  DIV CH
+  MOV DL, AH
+  ADD DX, 30h
+  MOV AH, 02
+  INT 21h        
+  
+  RET 
 
 
 row DB 0
+firstnum DB 0
+secondnum DB 0
+sum DB 0
