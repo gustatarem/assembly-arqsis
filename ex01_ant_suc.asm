@@ -33,19 +33,19 @@ ifok:
   MOV AH, 02
   MOV CX, BX
   CMP BL, 30h
-  JNE diff0
+  JNE diffx0
   CMP BH, 30h
-  JNE diff00
+  JNE diff0x
   MOV CH, 2Dh
   MOV CL, 31h
   JMP prints 
   
-diff00:
+diff0x:
   SUB CH, 1
   MOV CL,39h    
   JMP prints
 
-diff0:
+diffx0:
   SUB CL, 1
 
 prints: 
@@ -58,21 +58,21 @@ prints:
   PRINT 'O sucessor ao numero digitado eh: '
   MOV CX, BX
   CMP BL, 39h
-  JNE not9
+  JNE notx9
   CMP BH, 39h
-  JNE not99
+  JNE not9x
   MOV CH, 30h
   MOV CL, 30h
   MOV DL, 31h
   INT 21h
   JMP printnum
 
-not99:  
+not9x:  
   ADD CH, 1
   MOV CL,30h    
   JMP printnum
   
-not9:   
+notx9:   
   ADD CL, 1
 
 printnum: 
@@ -90,5 +90,5 @@ printnum:
         
 RET 
 
-
-row DB 0
+data:
+  row DB 0
