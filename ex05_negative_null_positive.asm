@@ -47,8 +47,12 @@ checknegative:
 
 checknegative00:
   CMP BL, 30h
-  PRINT 'O valor -00 eh inexistente'
+  JE negativezero
+  PRINT 'O numero digitado eh negativo.'
   JMP ending
+
+negativezero:
+  PRINT '-00 eh um numero inexistente.'
 
 checknull:
   CMP BH, 30h
