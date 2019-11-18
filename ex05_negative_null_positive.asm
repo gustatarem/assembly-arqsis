@@ -40,9 +40,16 @@ checknegative:
   GOTOXY 0, row
   CMP DH, 2Dh
   JNE checknull
+  CMP BH, 30h
+  JE checknegative00
   PRINT 'O numero digitado eh negativo.'
   JMP ending
-  
+
+checknegative00:
+  CMP BL, 30h
+  PRINT 'O valor -00 eh inexistente'
+  JMP ending
+
 checknull:
   CMP BH, 30h
   JNE positive
