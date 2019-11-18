@@ -19,7 +19,7 @@ print:
   INT 21h
   CMP BL, 39h
   JE ifx0
-  JMP soma
+  JMP sum 
   
 ifx0:
   ADD row, 1
@@ -36,7 +36,8 @@ sum:
   LOOP start
   
 ending:
-  PRINT '.'  
+  PRINT '.'
+  RET
           
 data:
   row DB 0          
