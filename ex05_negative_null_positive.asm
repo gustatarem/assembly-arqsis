@@ -53,6 +53,7 @@ checknegative00:
 
 negativezero:
   PRINT '-00 eh um numero inexistente.'
+  JMP ending
 
 checknull:
   CMP BH, 30h
